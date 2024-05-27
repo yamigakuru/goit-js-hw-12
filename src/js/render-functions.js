@@ -1,47 +1,47 @@
-import iziToast from 'izitoast';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+let gallery;
+
 export function clearGallery() {
-  const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = '';
+  const galleryContainer = document.querySelector('.gallery');
+  galleryContainer.innerHTML = '';
 }
 
 export function displayImages(images) {
-  const gallery = document.querySelector('.gallery');
+  const galleryContainer = document.querySelector('.gallery');
+  const imageCards = images.map(image => createImageCard(image)).join('');
+  galleryContainer.insertAdjacentHTML('beforeend', imageCards);
 
-  if (images.length === 0) {
-    iziToast.error({
-      title: 'Error',
-      message: 'Sorry, there are no images matching your search query. Please try again!',
-    });
-    return;
+  if (!gallery) {
+    gallery = new SimpleLightbox('.gallery a');
+  } else {
+    gallery.refresh();
   }
+}
 
-  images.forEach(image => {
-    const card = document.createElement('a');
-    card.href = image.largeImageURL;
-    card.classList.add('card');
-
-    card.innerHTML = `
-      <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy">
-      <div class="card-info">
-        <p>Likes: ${image.likes}</p>
-        <p>Views: ${image.views}</p>
-        <p>Comments: ${image.comments}</p>
-        <p>Downloads: ${image.downloads}</p>
+function createImageCard(image) {
+  return `
+    <div class="image-card">
+      <a href="${image.largeImageURL}">
+        <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
+      </a>
+      <div class="image-info">
+        <p><strong>Likes:</strong> ${image.likes}</p>
+        <p><strong>Views:</strong> ${image.views}</p>
+        <p><strong>Comments:</strong> ${image.comments}</p>
+        <p><strong>Downloads:</strong> ${image.downloads}</p>
       </div>
-    `;
-    gallery.appendChild(card);
-  });
-
-  new SimpleLightbox('.gallery a').refresh();
+    </div>
+  `;
 }
 
 export function showLoader() {
-  document.querySelector('.loader').style.display = 'block';
+  const loader = document.querySelector('.loader');
+  loader.classList.remove('hidden');
 }
 
 export function hideLoader() {
-  document.querySelector('.loader').style.display = 'none';
+  const loader = document.querySelector('.loader');
+  loader.classList.add('hidden');
 }
